@@ -18,10 +18,15 @@ events.columns = events.columns.droplevel()
 events.columns = ['year', 'game_id', 'team', 'BB', 'E', 'H', 'HBP', 'HR', 'ROE', 'SO']
 events = events.rename_axis(None, axis='columns')
 
+print("events\n", info.head())
+print("pa\n", pa.head())
 events_plus_pa = pd.merge(events, pa, how='outer', left_on=['year', 'game_id', 'team'],
         right_on=['year', 'game_id', 'year'])
+print("events_plus\n", events_plus_pa.head())
+print("info\n", info.head())
 # Merge plate appearances
 defense = pd.merge(events_plus_pa, info)
+print("defense\n", defense.head())
 # add col and calculate the DER
 defense.loc[:, 'DER'] = 1 - ((defense['H'] + defense['ROE'])/(defense['PA'] - defense['BB'] 
     - defense['SO'] - defense['HBP'] - defense['HR']))
@@ -29,10 +34,12 @@ defense.loc[:, 'DER'] = 1 - ((defense['H'] + defense['ROE'])/(defense['PA'] - de
 defense.loc[:, 'year'] = pd.to_numeric(defense['year'])
 # filter those after 1978
 der = defense.loc[defense['year'] >= 1978, ['year', 'defense', 'DER']]
+print("der before pivot\n", der.head())
 # Reshape with Pivot
 der = der.pivot(index='year', columns='defense', values='DER')
 
-der.plot(x_compat=True, xticks=range(1978, 2018, 4), rot=45)
-plt.show()
+print("der after pivot\n", der.head())
+#der.plot(x_compat=True, xticks=range(1978, 2018, 4), rot=45)
+#plt.show()
 
 
